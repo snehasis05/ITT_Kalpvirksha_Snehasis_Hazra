@@ -1,0 +1,101 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Node {
+    char data[10];
+    struct Node* left;
+    struct Node* right;
+};
+
+struct Node* createNode(const char* data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    strcpy(newNode->data, data);
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+
+void findPath(struct Node* root, const char* value, char** path, int* length) {
+    if (root == NULL)
+        return;
+
+    strcpy(path[*length], root->data);
+    (*length)++;
+
+    if (strcmp(root->data, value) == 0) {
+        return;
+    }
+
+    findPath(root->left, value, path, length);
+    findPath(root->right, value, path, length);
+
+    if (strcmp(path[*length - 1], value) != 0) {
+        (*length)--;
+    }
+}
+
+int main() {
+    struct Node* root = createNode("Bangalore");
+
+    root->left = createNode("Bangalore West");
+    root->right = createNode("Bangalore East");
+
+    root->left->left = createNode("C");
+    root->left->right = createNode("D");
+
+    root->right->left = createNode("A");
+    root->right->right = createNode("B");
+
+    root->right->left->left = createNode("56001");
+    root->right->left->right = createNode("56002");
+
+    root->right->right->left = createNode("56003");
+    root->right->right->right = createNode("56004");
+
+    root->left->left->left = createNode("56005");
+    root->left->left->right = createNode("56006");
+
+    root->left->right->left = createNode("56007");
+    root->left->right->right = createNode("56008");
+
+    char inputValues[2][10];
+    printf("Enter Corporation code 1: ");
+    scanf("%s", inputValues[0]);
+    printf("Enter Corporation code 2: ");
+    scanf("%s", inputValues[1]);
+
+    char* path[2][10];
+    int length[2] = {0};
+
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 10; j++) {
+            path[i][j] = (char*)malloc(10 * sizeof(char));
+        }
+    }
+
+    
+    for (int i = 0; i < 2; i++) {
+        findPath(root, inputValues[i], path[i], &length[i]);
+    }
+
+   
+    int i = 0, j = 0;
+    while (i < length[0] && j < length[1]) {
+        if (strcmp(path[0][i], path[1][j]) == 0) {
+            printf("%s", path[0][i]);
+            i++;
+            j++;
+            if (i < length[0] || j < length[1]) {
+                printf(", ");
+            }
+        } else if (strcmp(path[0][i], path[1][j]) < 0) {
+            i++;
+        } else {
+            j++;
+        }
+    }
+    printf("\n");
+
+    return 0;
+}
